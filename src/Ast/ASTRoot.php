@@ -9,7 +9,7 @@ class ASTRoot implements CodeModelInterface
     public $constants = [];
     public $types     = [];
     public $entities  = [];
-    
+
 
     function getConstants()
     {
@@ -26,9 +26,9 @@ class ASTRoot implements CodeModelInterface
         return $this->entities;
     }
 
-    public function getConstant($name) 
+    public function getConstant($name)
     {
-        if (isset($this->constants[$name])) 
+        if (isset($this->constants[$name]))
         {
             return $this->constants[$name]->value;
         }

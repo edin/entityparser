@@ -6,10 +6,10 @@ use EntityParser\Parser\Contract\EntityInterface;
 
 class ASTEntity implements EntityInterface
 {
-	public $name;
-	public $table;
-	public $fields;
-	public $annotations = [];
+    public $name;
+    public $table;
+    public $fields;
+    public $annotations = [];
 
     public function getName()
     {

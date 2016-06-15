@@ -36,25 +36,25 @@ class ParseCommand extends Command
                null,
                InputOption::VALUE_NONE,
                'Display all entities from entity definition file'
-            )    
+            )
             ->addOption(
                'const',
                null,
                InputOption::VALUE_NONE,
                'Display all constants from entity definition file'
-            ) 
+            )
             ->addOption(
                'sql',
                null,
                InputOption::VALUE_NONE,
                'Sample sql output'
-            ) 
+            )
             ->addOption(
                'php',
                null,
                InputOption::VALUE_NONE,
                'Sample php output'
-            )                                                
+            )
         ;
     }
 
@@ -76,7 +76,7 @@ class ParseCommand extends Command
         {
             $this->output->write("\n");
             $this->showConstants($codeModel);
-        }        
+        }
 
         if ($input->getOption("type"))
         {
@@ -94,13 +94,13 @@ class ParseCommand extends Command
         {
             $this->output->write("\n");
             $this->toSql($codeModel);
-        } 
+        }
 
         if ($input->getOption("php"))
         {
             $this->output->write("\n");
             $this->toPhp($codeModel);
-        }                     
+        }
     }
 
     private function showTypes(CodeModelInterface $codeModel)
@@ -108,7 +108,7 @@ class ParseCommand extends Command
         $this->output->write("Types: \n");
 
         $types = $codeModel->getTypes();
-        foreach ($types as $type) 
+        foreach ($types as $type)
         {
             $typeName = $type->getName();
             $length   = $type->getSize();
@@ -119,13 +119,13 @@ class ParseCommand extends Command
             if ($length > 0){
                 $msg .= ", Length: {$length}";
             }
-            
+
             if ($type->getBaseType() != null)
             {
-                $msg .= " -> {$baseType->getName()}";                     
+                $msg .= " -> {$baseType->getName()}";
             }
             $this->output->write("  {$msg}\n");
-        }        
+        }
     }
 
     private function showEntities(CodeModelInterface $codeModel)
@@ -133,7 +133,7 @@ class ParseCommand extends Command
         $this->output->write("Entities: \n");
 
         $entities = $codeModel->getEntities();
-        foreach ($entities as $e) 
+        foreach ($entities as $e)
         {
             $name = $e->getName();
             $msg      = "Entity: {$name}\n";
@@ -145,24 +145,24 @@ class ParseCommand extends Command
                 $type = $f->getType()->getName();
                 $msg .= "    Field: {$name} -> {$type}\n";
             }
-            
+
             $this->output->write("  {$msg}\n");
-        }        
-    }  
+        }
+    }
 
     private function showConstants(CodeModelInterface $codeModel)
     {
         $this->output->write("Constants: \n");
 
         $constants = $codeModel->getConstants();
-        foreach ($constants as $c) 
+        foreach ($constants as $c)
         {
             $name  = $c->getName();
             $value = $c->getValue();
             $msg   = "Constant: {$name} = {$value}";
             $this->output->write("  {$msg}\n");
-        }        
-    }   
+        }
+    }
 
     private function toSql(CodeModelInterface $codeModel)
     {
@@ -170,7 +170,7 @@ class ParseCommand extends Command
         $this->output->write("SQL: \n");
 
         $entities = $codeModel->getEntities();
-        foreach ($entities as $e) 
+        foreach ($entities as $e)
         {
             $name = $e->getName();
             $msg  = "CREATE TABLE `{$name}` (\n";
@@ -193,25 +193,25 @@ class ParseCommand extends Command
                 if ($typeName == "int") {
                     $typeName = "INT";
                 }
-                else if($typeName == "string") 
+                else if($typeName == "string")
                 {
                     $typeName = "VARCHAR";
                     if ($size > 0){
                         $typeName .= "($size)";
                     }
                 }
-                else if($typeName == "text") 
+                else if($typeName == "text")
                 {
                     $typeName = "MEDIUMTEXT";
                     if ($size > 0){
                         $typeName .= "($size)";
                     }
-                }                
+                }
                 else if($typeName == "date")
                 {
                     $typeName = "DATE";
                 }
-                else 
+                else
                 {
                     $typeName = "#Unknown($typeName)";
                 }
@@ -222,8 +222,8 @@ class ParseCommand extends Command
             $msg .= ");\n";
 
             $this->output->write("{$msg}\n");
-        }        
-    } 
+        }
+    }
 
     private function toPhp(CodeModelInterface $codeModel)
     {
@@ -231,18 +231,18 @@ class ParseCommand extends Command
         $this->output->write("PHP: \n");
 
         $entities = $codeModel->getEntities();
-        foreach ($entities as $e) 
+        foreach ($entities as $e)
         {
             $name = $e->getName();
             $this->output->write("class {$name}\n");
             $this->output->write("{\n");
 
-            foreach ($e->getFields() as $f) 
+            foreach ($e->getFields() as $f)
             {
                 $fieldName = $f->getName();
                 $this->output->write("  public \${$fieldName};\n");
             }
             $this->output->write("}\n\n");
-        }        
-    }                
+        }
+    }
 }

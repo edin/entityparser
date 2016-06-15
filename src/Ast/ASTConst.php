@@ -10,11 +10,11 @@ class ASTConst implements ConstantInterface
     public $value;
     public $annotations = [];
 
-    public function getName() 
+    public function getName()
     {
         return $this->name;
     }
-    
+
     public function getAnnotations()
     {
         return $this->annotations;

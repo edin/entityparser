@@ -39,5 +39,5 @@ class ASTField implements FieldInterface
     function getDefaultValue()
     {
         return $this->default;
-    }    
+    }
 }

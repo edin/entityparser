@@ -6,9 +6,9 @@ use EntityParser\Parser\Contract\TypeInterface;
 
 class ASTType implements TypeInterface
 {
-	public $name;
-	public $type = null;
-	public $annotations = [];
+    public $name;
+    public $type = null;
+    public $annotations = [];
 
     public function getRawType()
     {
@@ -39,7 +39,7 @@ class ASTType implements TypeInterface
     {
         return null;
     }
-    
+
     function getIsBaseType()
     {
         return false;
@@ -48,7 +48,7 @@ class ASTType implements TypeInterface
     function getIsNullable()
     {
         return null;
-    }    
+    }
 
     function getSize()
     {

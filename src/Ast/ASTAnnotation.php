@@ -23,5 +23,5 @@ class ASTAnnotation implements AnnotationInterface
     function getAttributes()
     {
         return $this->attributes;
-    }    
+    }
 }

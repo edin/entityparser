@@ -55,7 +55,7 @@ class InputStream
     private $str;
     private $pos;
     private $len;
-    
+
     public $line  = 1;
 
     public function __construct($str) {
@@ -63,36 +63,36 @@ class InputStream
         $this->pos = 0;
         $this->len = strlen($str);
     }
-    
+
     private function getChar($index) {
         if ($index >= 0 && $index < $this->len) return $this->str[$index];
-        return null;        
+        return null;
     }
-    
+
     public function val() {
         return $this->getChar($this->pos);
     }
-    
+
     public function peek() {
         return $this->getChar($this->pos+1);
-    }    
-    
+    }
+
     public function at($offset) {
         $pos = $this->pos + $offset;
         return $this->getChar($pos);
     }
-    
+
     public function next() {
         $this->pos = $this->pos + 1;
     }
     public function back() {
         $this->pos = $this->pos - 1;
-    }    
-    
+    }
+
     public function hasMore() {
         return $this->pos < $this->len;
     }
-    
+
     public function skipWhiteSpace()
     {
         while ($this->hasMore()) {
@@ -110,7 +110,7 @@ class InputStream
     }
 }
 
-class Token 
+class Token
 {
     public $type;
     public $value;
@@ -133,7 +133,7 @@ function GetString(InputStream $it) {
     $buffer = "";
 
     $it->next(); // Skip starting {"} char
-    
+
     while ($it->hasMore())
     {
         $val = $it->val();
@@ -148,8 +148,8 @@ function GetString(InputStream $it) {
         if ($val == "\"") {
             //$it->next();
             break;
-        }        
-        
+        }
+
         $buffer .= $val;
         $it->next();
     }
@@ -164,20 +164,20 @@ function GetAnnotation(InputStream $it) {
     {
         $val = $it->val();
         if (IsUpper($val) || IsLower($val) || $val == "\\" || $val == "_") {
-            $buffer .= $val;    
+            $buffer .= $val;
         } else {
             $it->back();
             break;
         }
         $it->next();
     }
-    return $buffer;        
+    return $buffer;
 }
 
 function GetComment(InputStream $it) {
     $buffer = "";
     $it->next(); // Skip starting {/} char
-    $it->next(); // Skip char     {*} 
+    $it->next(); // Skip char     {*}
 
     while ($it->hasMore())
     {
@@ -195,7 +195,7 @@ function GetComment(InputStream $it) {
         $buffer .= $val;
         $it->next();
     }
-    return $buffer;    
+    return $buffer;
 }
 
 function GetSingleLineComment(InputStream $it) {
@@ -222,16 +222,16 @@ function GetIdentifier(InputStream $it) {
     while ($it->hasMore())
     {
         $val = $it->val();
-        
+
         if (IsLower($val) || IsUpper($val) || IsDigit($val) || $val == "_") {
-            $buffer .= $val;    
+            $buffer .= $val;
         } else {
             $it->back();
             break;
         }
         $it->next();
     }
-    return $buffer;        
+    return $buffer;
 }
 
 function GetDigits(InputStream $it) {
@@ -258,27 +258,27 @@ function GetNumber(InputStream $it) {
         $it->next();
     }
     $buffer .= GetDigits($it);
-    
+
     if ($it->val() == ".") {
         $it->next();
         $decimal = GetDigits($it);
         $buffer = $buffer . "." . $decimal;
     }
     $it->back();
-    
-    return $buffer;        
+
+    return $buffer;
 }
 
 function GetTokens($def)
 {
     $it = new InputStream($def);
     $tokens = [];
-    
+
     while ($it->hasMore())
     {
-        $it->skipWhiteSpace();        
+        $it->skipWhiteSpace();
         $value = $it->val();
-                
+
         switch($value) {
             case "{": {
                 $tokens[] = NewToken($value, OpenBrace);
@@ -291,22 +291,22 @@ function GetTokens($def)
             } break;
             case ")": {
                 $tokens[] = NewToken($value, CloseParen);
-            } break;    
+            } break;
             case ",": {
                 $tokens[] = NewToken($value, Comma);
-            } break;        
+            } break;
             case ".": {
                 $tokens[] = NewToken($value, Dot);
-            } break;                
+            } break;
             case ";": {
                 $tokens[] = NewToken($value, Semicolon);
             } break;
             case "=": {
                 $tokens[] = NewToken($value, AssignOp);
-            } break;        
+            } break;
             case "?": {
                 $tokens[] = NewToken($value, QuestionMark);
-            } break;                        
+            } break;
             case "\"": {
                 $string = GetString($it);
                 $tokens[] = NewToken($string, String);
@@ -331,37 +331,37 @@ function GetTokens($def)
                 $tokens[]   = NewToken($number, Number);
             } break;
             case (ctype_alpha($value)): {
-                
+
                 $value = GetIdentifier($it);
                 $v = strtolower($value);
-                
-                if (in_array($v,SyntaxMap::$keywords)) 
+
+                if (in_array($v,SyntaxMap::$keywords))
                 {
-                    $tokens[] = NewToken($value, Keyword);    
+                    $tokens[] = NewToken($value, Keyword);
                 }
-                else if (in_array($v, SyntaxMap::$dataTypes)) 
+                else if (in_array($v, SyntaxMap::$dataTypes))
                 {
-                    $tokens[] = NewToken($value, DataType);    
+                    $tokens[] = NewToken($value, DataType);
                 }
-                else 
+                else
                 {
                     $tokens[] = NewToken($value, Identifier);
-                }                                
-            } break;            
+                }
+            } break;
             default: {
                 throw ParserException::unexpectedCharacter($value, $it);
-            }                        
+            }
         }
-        
+
         if (count($tokens) > 0) {
             $lastToken = $tokens[count($tokens)-1];
             if (!isset($lastToken->line)) {
                 $lastToken->line = $it->line;
             }
         }
-        
+
         $it->next();
-    }    
+    }
     return $tokens;
 }
 
@@ -381,21 +381,21 @@ class TokenStream
     public function hasMore() {
         return isset($this->tokens[$this->pos+1]);
     }
-    
+
     public function val() {
         return $this->tokens[$this->pos];
     }
-    
+
     public function getAndMove(){
         $val = $this->tokens[$this->pos];
         $this->next();
         return $val;
     }
-    
+
     public function next() {
         $this->pos++;
     }
-    
+
     public function typeAt($type, $at=0)
     {
         $p = $this->pos + $at;
@@ -407,9 +407,9 @@ class TokenStream
             }
             return true;
         }
-        return false;    
+        return false;
     }
-    
+
     public function expect($type, $at=0)
     {
         $p = $this->pos + $at;
@@ -422,9 +422,9 @@ class TokenStream
             }
             return $t;
         }
-        throw ParserException::indexOutOfRange($p);        
+        throw ParserException::indexOutOfRange($p);
     }
-    
+
     public function expectAny($typeArr, $at=0)
     {
         $p = $this->pos + $at;
@@ -434,15 +434,15 @@ class TokenStream
             if (!in_array($t->type, $typeArr, true)) {
                 $tokenType = [];
                 foreach($typeArr as $type) {
-                    $tokenType[] = SyntaxMap::$map[$type];    
+                    $tokenType[] = SyntaxMap::$map[$type];
                 }
                 $tokenTypeStr = implode(",", $tokenType);
                 throw ParserException::expectedToken($t, $tokenTypeStr);
             }
             return $t;
         }
-        throw ParserException::indexOutOfRange($p);        
-    }    
+        throw ParserException::indexOutOfRange($p);
+    }
 }
 
 
@@ -510,10 +510,10 @@ function ParseType(TokenStream $it)
     $type = new ASTType;
     $it->expect(Keyword,    0);
     $it->expect(Identifier, 1);
-    
+
     $it->getAndMove();
     $identifier   = $it->getAndMove();
-    
+
     $type->name = $identifier->value;
     $type->type = ParseDataType($it);
 
@@ -532,14 +532,14 @@ function ParseType(TokenStream $it)
 function ParseEntity(TokenStream $it)
 {
     $entity = new ASTEntity;
-    
+
     $it->expect(Keyword,    0);
     $it->expect(Identifier, 1);
     $it->getAndMove();
     $identifier = $it->getAndMove();
-    
+
     $entity->table = $identifier->value;
-    
+
     //Verify that entity is not redeclared
     $key = strtolower($identifier->value);
     if (isset($it->entities[$key])){
@@ -547,30 +547,30 @@ function ParseEntity(TokenStream $it)
     } else {
         $it->entities[$key] = [];
     }
-    
-    // Parse table name 
+
+    // Parse table name
     if ($it->typeAt(OpenParen, 0)) {
         $it->expect(OpenParen, 0);
         $it->expect(Identifier,1);
         $it->expect(CloseParen,2);
-        
+
         $it->getAndMove();
         $tableName = $it->getAndMove();
         $it->getAndMove();
         $entity->table = $tableName->value;
     }
-    
+
     $it->expect(OpenBrace,  0);
     $it->getAndMove();
-    
+
     $entity->name = $identifier->value;
-    
+
     while (!$it->typeAt(CloseBrace, 0))
     {
         $field = ParseField($it, $entity);
         $entity->fields[] = $field;
     }
-    
+
     $it->getAndMove();
     return $entity;
 }
@@ -579,31 +579,31 @@ function ParseAnnotation(TokenStream $it)
 {
     $it->expect(Annotation,   0);
     $ast = new ASTAnnotation;
-    
+
     $type  = $it->getAndMove();
     $ast->name = $type->value;
-    
+
     if ($it->typeAt(OpenParen,0))
     {
         $it->getAndMove();
         $expectComma = false;
 
-        //Parse default 
+        //Parse default
         $isVal =  $it->typeAt(String,0) || $it->typeAt(Number);
         if ($isVal) {
             $tokenValue = $it->getAndMove();
             $ast->default = $tokenValue->value;
             $expectComma = true;
         }
-        
+
         //Read key = value
         while (!$it->typeAt(CloseParen, 0))
         {
             if ($expectComma) {
                 $it->expect(Comma, 0);
-                $it->getAndMove();    
+                $it->getAndMove();
             }
-            
+
             $it->expect(Identifier, 0);
             $it->expect(AssignOp, 1);
             $it->expectAny([String, Number], 2);
@@ -611,8 +611,8 @@ function ParseAnnotation(TokenStream $it)
             $it->getAndMove();
             $tokenValue = $it->getAndMove();
             $ast->attributes[$identifier->value] = $tokenValue;
-            
-            $expectComma = true;    
+
+            $expectComma = true;
         }
         $it->expect(CloseParen, 0);
         $it->getAndMove();
@@ -662,11 +662,11 @@ function ParseDataType(TokenStream $it) {
             $it->expect(Number, 1);
             $it->getAndMove();
             $num   = $it->getAndMove();
-            $dt->scale = $num->value; 
+            $dt->scale = $num->value;
         }
         $it->expect(CloseParen);
         $it->getAndMove();
-    }    
+    }
     return $dt;
 }
 
@@ -674,12 +674,12 @@ function ParseField(TokenStream $it, ASTEntity $entity)
 {
     $f = new ASTField();
     $f->annotations = ParseAnnotations($it);
-    
+
     $type = ParseDataType($it);
 
     $it->expectAny([Identifier, DataType], 0);
     $identifier = $it->getAndMove();
-    
+
     //Verify if entity is already declared
     $entityKey = strtolower($entity->name);
     $key = strtolower($identifier->value);
@@ -688,8 +688,8 @@ function ParseField(TokenStream $it, ASTEntity $entity)
         throw ParserException::redeclaredField($entity, $identifier);
     } else {
         $it->entities[$entityKey][$key] = [];
-    }    
-    
+    }
+
     if ($it->typeAt(AssignOp, 0))
     {
         $it->getAndMove();
@@ -697,9 +697,9 @@ function ParseField(TokenStream $it, ASTEntity $entity)
         $val = $it->getAndMove();
         $f->default = $val;
     }
-    $it->expect(Semicolon,  0);    
+    $it->expect(Semicolon,  0);
     $it->getAndMove();
-    
+
     $f->type = $type;
     $f->name = $identifier->value;
     return $f;
