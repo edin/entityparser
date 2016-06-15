@@ -10,7 +10,7 @@ const unitDir       = "blog";
 const unitName      = "BlogDbContext";
 
 @PK type UserId     int;
-@PK type CommentId     int;
+@PK type CommentId  int;
 @PK type PostId     int;
 
 @Unique
@@ -55,11 +55,12 @@ entity Post {
 Following snipet demonstrates how to load definition file.
 ```php
 <?php
+include __DIR__ . "/vendor/autoload.php";
 use EntityParser\Parser\Parser;
 use EntityParser\Parser\Contract\CodeModelInterface;
 
 $parser = new Parser();
-$codeModel = $parser->parse(file_get_content("Blog.edf"));
+$codeModel = $parser->parse(file_get_contents("Blog.edf"));
 
 /**
  * @var CodeModelInterface $codeModel
