@@ -10,6 +10,5 @@ interface TypeInterface
     function getAttributes();
     function getIsBaseType();
     function getIsNullable();
-
     function getSize();
 }
