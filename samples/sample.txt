@@ -1,0 +1,30 @@
+type UserId		int;
+type CommentId		int;
+type ProfileId		int;
+
+type Email          	string(100);
+type ShortString	string(100);
+type LongString 	string(500);
+type DateModified  	date;
+type DateCreated   	date;
+
+@HasMany("Profile", via="user_profiles")
+entity User {
+    UserId         	Id;
+    ShortString    	FirstName;
+    ShortString    	LastName;
+    @Unique
+    Email       	Email;
+    ShortString	 	UserName;
+    ShortString    	PasswordHash;
+    DateModified	Modified;
+    DateCreated 	Created;
+}
+
+entity Comment {
+    CommentId     	Id;
+    UserId       	UserId;
+    String          Message;
+    DataModified	Modified;     
+    DateCreated	    Created;
+}
