@@ -73,7 +73,7 @@ $constants = $codeModel->getConstants();
 ##You can find out more by executing following commands:
 
 ```cmd
-**> php demo.php parse Blog --type**
+php demo.php parse Blog --type
 
 Types:
   Type: UserId -> int
@@ -88,7 +88,7 @@ Types:
 ```
 
 ```cmd
-> php demo.php parse Blog --const
+php demo.php parse Blog --const
 
 Constants:
   Constant: unitNamespace = app\data
@@ -97,7 +97,7 @@ Constants:
 ```
 
 ```cmd
-**> php demo.php parse Blog --entity**
+php demo.php parse Blog --entity
 
 Entities:
   Entity: User
@@ -127,12 +127,9 @@ Entities:
     Field: Created -> DateCreated
 ```
 
-
-```
-**> php demo.php parse Blog --sql**
-```
-
 ```sql
+php demo.php parse Blog --sql
+
 CREATE TABLE `User` (
     `Id` INT,
     `FirstName` VARCHAR(100),
@@ -163,12 +160,9 @@ CREATE TABLE `Post` (
 );
 ```
 
-```
-**> php demo.php parse Blog --php**
-```
-
 ```php
-<?php
+php demo.php parse Blog --php
+
 class User
 {
   public $Id;
