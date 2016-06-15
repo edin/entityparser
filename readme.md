@@ -70,7 +70,7 @@ $constants = $codeModel->getConstants();
  
 ```
 
-##You can find out more by executing following commands:
+You can find out more by executing following commands:
 
 ```cmd
 php demo.php parse Blog --type
