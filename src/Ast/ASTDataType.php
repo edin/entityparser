@@ -20,20 +20,12 @@ class ASTDataType implements TypeInterface
 
     function getAnnotations()
     {
-        return $this->annotations;
+        return new AnnotationCollection($this->annotations);
     }
 
     function getBaseType()
     {
         return $this->type;
-    }
-
-    function getAttributes()
-    {
-        return [
-            'length' => $this->size,
-            'scale'  => $this->scale
-        ];
     }
 
     function getIsBaseType()
@@ -50,4 +42,9 @@ class ASTDataType implements TypeInterface
     {
         return $this->size;
     }
+
+    function getPrecision()
+    {
+        return $this->scale;
+    }        
 }

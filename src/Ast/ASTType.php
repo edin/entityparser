@@ -27,17 +27,12 @@ class ASTType implements TypeInterface
 
     function getAnnotations()
     {
-        return $this->annotations;
+        return new AnnotationCollection($this->annotations);
     }
 
     function getBaseType()
     {
         return $this->type;
-    }
-
-    function getAttributes()
-    {
-        return null;
     }
 
     function getIsBaseType()
@@ -54,4 +49,9 @@ class ASTType implements TypeInterface
     {
         return $this->getBaseType()->getSize();
     }
+
+    function getPrecision()
+    {
+        return $this->getBaseType()->getPrecision();
+    }    
 }

@@ -18,7 +18,7 @@ class ASTEntity implements EntityInterface
 
     public function getAnnotations()
     {
-        return $this->annotations;
+        return new AnnotationCollection($this->annotations);
     }
 
     public function getTableName()
@@ -28,6 +28,6 @@ class ASTEntity implements EntityInterface
 
     public function getFields()
     {
-        return $this->fields;
+        return new FieldCollection($this->fields);
     }
 }

@@ -19,7 +19,7 @@ class ParseCommand extends Command
     {
         $this
             ->setName('parse')
-            ->setDescription('Greet someone')
+            ->setDescription('Entity parser demo')
             ->addArgument(
                 'name',
                 InputArgument::OPTIONAL,

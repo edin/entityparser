@@ -17,7 +17,7 @@ class ASTConst implements ConstantInterface
 
     public function getAnnotations()
     {
-        return $this->annotations;
+        return new AnnotationCollection($this->annotations);
     }
 
     public function getValue()

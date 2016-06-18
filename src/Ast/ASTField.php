@@ -28,7 +28,7 @@ class ASTField implements FieldInterface
 
     function getAnnotations()
     {
-        return $this->annotations;
+        return new AnnotationCollection($this->annotations);
     }
 
     function getType()
