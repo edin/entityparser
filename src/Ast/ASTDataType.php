@@ -7,44 +7,62 @@ use EntityParser\Parser\Contract\TypeInterface;
 class ASTDataType implements TypeInterface
 {
     public $name;
-    public $type;
+    public $type = null;
     public $size;
     public $scale;
     public $nullable = false;
     public $annotations = [];
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getAnnotations()
+    public function getAnnotations()
     {
-        return new AnnotationCollection($this->annotations);
+        $annotations = new AnnotationCollection($this->annotations);
+        if ($this->type != null) 
+        {
+            $baseAnnotations = $this->type->getAnnotations();
+            $annotations->includeFromBase($baseAnnotations);
+        }
+        return $annotations;
     }
 
-    function getBaseType()
+    public function getBaseType()
     {
         return $this->type;
     }
 
-    function getIsBaseType()
+    public function getIsBaseType()
     {
         return ($this->type == null);
     }
 
-    function getIsNullable()
+    public function getIsNullable()
     {
         return $this->nullable;
     }
 
-    function getSize()
+    public function getSize()
     {
-        return $this->size;
+        if ($this->size !== null) {
+            return (int)$this->size;    
+        }
+        if ($this->type !== null) {
+            return $this->type->getSize();
+        }
+        return null;
     }
 
-    function getPrecision()
+    public function getPrecision()
     {
-        return $this->scale;
+        if ($this->scale !== null) {
+            return (int)$this->size;    
+        }
+        if ($this->type !== null) {
+            return $this->type->getPrecision();
+        }
+        return null;
     }        
 }

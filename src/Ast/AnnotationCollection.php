@@ -4,26 +4,8 @@ namespace EntityParser\Parser\Ast;
 
 use EntityParser\Parser\Contract\AnnotationInterface;
 
-class AnnotationCollection implements \IteratorAggregate
+class AnnotationCollection extends Collection
 {
-    /**
-     * @var AnnotationInterface[] $annotation;
-     */        
-    private $annotations;
-
-    public function __constuct($annotations)
-    {
-        $this->annotations = array_values($annotations);
-    }
-
-    public function getIterator() 
-    {
-        foreach ($this->annotations as $annotation) 
-        {
-            yield $annotation;
-        }
-    }
-
     /**
      * @return boolean
      */
@@ -37,15 +19,9 @@ class AnnotationCollection implements \IteratorAggregate
      */
     public function find($name)
     {
-        $list = [];
-        foreach($this->annotations as $annotation)
-        {
-            if (strtolower($annotation->getName()) == $name)
-            {
-                $list[] = $annotation;
-            }
-        }
-        return $list;
+        return $this->filterBy(function($e) use ($name) {
+            return $e->getName() == $name;
+        });
     }    
 
     /**
@@ -57,13 +33,16 @@ class AnnotationCollection implements \IteratorAggregate
     }
 
     /**
-     * @return AnnotationInterface | null
+     * @return AnnotationCollection
      */
-    public function firstOrNull()
+    public function includeFromBase(AnnotationCollection $base)
     {
-        if (isset($this->annotations[0])) {
-            return $this->annotations[0];
+        foreach ($base as $baseAnnotation) 
+        {
+            if (!$this->contains($baseAnnotation->getName())) {
+                $this->add($baseAnnotation);
+            }
         }
-        return null;
-    }
+        return $this;
+    }    
 }

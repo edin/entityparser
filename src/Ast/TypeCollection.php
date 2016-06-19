@@ -2,9 +2,9 @@
 
 namespace EntityParser\Parser\Ast;
 
-use EntityParser\Parser\Contract\FieldInterface;
+use EntityParser\Parser\Contract\TypeInterface;
 
-class FieldCollection extends Collection
+class TypeCollection extends Collection
 {
     /**
      * @return boolean
@@ -15,7 +15,7 @@ class FieldCollection extends Collection
     }
 
     /**
-     * @return FieldInterface[]
+     * @return TypeInterface[]
      */
     public function find($name)
     {
@@ -25,7 +25,7 @@ class FieldCollection extends Collection
     }    
 
     /**
-     * @return FieldInterface | null
+     * @return TypeInterface | null
      */
     public function findFirstOrNull($name)
     {

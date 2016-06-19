@@ -448,7 +448,7 @@ class TokenStream
 
 function ParseDefinition(TokenStream $it)
 {
-    $root = new ASTRoot;
+    $root = new ASTRoot();
 
     while ($it->hasMore() && $it->expectAny([Annotation,Keyword], 0))
     {
@@ -459,17 +459,17 @@ function ParseDefinition(TokenStream $it)
             case "type": {
                 $type = ParseType($it);
                 $type->annotations = $annotations;
-                $root->types[] = $type;
+                $root->types->add($type);
             } break;
             case "entity": {
                 $entity = ParseEntity($it);
                 $entity->annotations = $annotations;
-                $root->entities[] = $entity;
+                $root->entities->add($entity);
             } break;
             case "const": {
                 $const = ParseConstant($it);
                 $const->annotations = $annotations;
-                $root->constants[$const->name] = $const;
+                $root->constants->add($const);
             } break;
             default: {
                 throw ParserException::unexpectedKeyword($token);

@@ -21,22 +21,22 @@ class ASTField implements FieldInterface
         return $type->name;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getAnnotations()
+    public function getAnnotations()
     {
         return new AnnotationCollection($this->annotations);
     }
 
-    function getType()
+    public function getType()
     {
         return $this->type;
     }
 
-    function getDefaultValue()
+    public function getDefaultValue()
     {
         return $this->default;
     }

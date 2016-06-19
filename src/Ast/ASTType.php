@@ -20,38 +20,50 @@ class ASTType implements TypeInterface
         return $type->name;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function getAnnotations()
+    public function getAnnotations()
     {
-        return new AnnotationCollection($this->annotations);
+        $annotations = new AnnotationCollection($this->annotations);
+        if ($this->type != null) 
+        {
+            $baseAnnotations = $this->type->getAnnotations();
+            $annotations->includeFromBase($baseAnnotations);
+        }
+        return $annotations;
     }
 
-    function getBaseType()
+    public function getBaseType()
     {
         return $this->type;
     }
 
-    function getIsBaseType()
+    public function getIsBaseType()
     {
         return false;
     }
 
-    function getIsNullable()
+    public function getIsNullable()
     {
+        return false;
+    }
+
+    public function getSize()
+    {
+        if ($this->type !== null) {
+            return $this->type->getSize();
+        }
         return null;
     }
 
-    function getSize()
+    public function getPrecision()
     {
-        return $this->getBaseType()->getSize();
-    }
-
-    function getPrecision()
-    {
-        return $this->getBaseType()->getPrecision();
+        if ($this->type !== null) {
+            return $this->type->getPrecision();
+        }
+        return null;
     }    
 }

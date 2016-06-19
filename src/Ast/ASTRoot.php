@@ -6,59 +6,44 @@ use EntityParser\Parser\Contract\CodeModelInterface;
 
 class ASTRoot implements CodeModelInterface
 {
-    public $constants = [];
-    public $types     = [];
-    public $entities  = [];
+    public $constants;
+    public $types;
+    public $entities;
 
+    public function __construct()
+    {
+        $this->constants = new ConstCollection([]);
+        $this->types     = new TypeCollection([]);
+        $this->entities  = new EntityCollection([]);       
+    }
 
-    function getConstants()
+    public function getConstants()
     {
         return $this->constants;
     }
 
-    function getTypes()
+    public function getTypes()
     {
         return $this->types;
     }
 
-    function getEntities()
+    public function getEntities()
     {
         return $this->entities;
     }
 
     public function getConstant($name)
     {
-        if (isset($this->constants[$name]))
-        {
-            return $this->constants[$name]->value;
-        }
-        return null;
-    }
-
-    public function getConstantByName($name)
-    {
-        if (isset($this->constants[$name]))
-        {
-            return $this->constants[$name];
-        }
-        return null;
+        return $this->constants->findFirstOrNull($name);
     }
 
     public function getTypeByName($name)
     {
-        if (isset($this->types[$name]))
-        {
-            return $this->types[$name];
-        }
-        return null;
+        return $this->types->findFirstOrNull($name);
     }
 
     public function getEntityByName($name)
     {
-        if (isset($this->entities[$name]))
-        {
-            return $this->entities[$name];
-        }
-        return null;
+        return $this->entities->findFirstOrNull($name);
     }
 }

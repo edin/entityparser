@@ -4,7 +4,7 @@ namespace EntityParser\Parser\Ast;
 
 use EntityParser\Parser\Contract\FieldInterface;
 
-class FieldCollection extends Collection
+class EntityCollection extends Collection
 {
     /**
      * @return boolean
@@ -15,7 +15,7 @@ class FieldCollection extends Collection
     }
 
     /**
-     * @return FieldInterface[]
+     * @return EntityInterface[]
      */
     public function find($name)
     {
@@ -25,7 +25,7 @@ class FieldCollection extends Collection
     }    
 
     /**
-     * @return FieldInterface | null
+     * @return EntityInterface | null
      */
     public function findFirstOrNull($name)
     {
