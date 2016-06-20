@@ -10,112 +10,9 @@ use EntityParser\Parser\Ast\ASTRoot;
 use EntityParser\Parser\Ast\ASTType;
 use EntityParser\Parser\Ast\ASTField;
 use EntityParser\Parser\Ast\ASTAnnotation;
+use EntityParser\Parser\Ast\ASTEnum;
+use EntityParser\Parser\Ast\ASTEnumValue;
 
-
-const OpenBrace    = 1;
-const CloseBrace   = 2;
-const Semicolon    = 3;
-const Identifier   = 4;
-const DataType     = 5;
-const Keyword      = 6;
-const OpenParen    = 7;
-const CloseParen   = 8;
-const Number       = 9;
-const Comma        = 10;
-const AssignOp     = 11;
-const String       = 12;
-const Annotation   = 14;
-const QuestionMark = 15;
-const Dot          = 16;
-
-class SyntaxMap {
-    public static $map = [
-        OpenBrace  => 'OpenBrace',
-        CloseBrace => 'CloseBrace',
-        Semicolon  => 'Semicolon',
-        Identifier => 'Identifier',
-        DataType   => 'DataType',
-        Keyword    => 'Keyword',
-        OpenParen  => 'OpenParen',
-        CloseParen => 'CloseParen',
-        Number     => 'Number',
-        Comma      => 'Comma',
-        AssignOp   => 'AssignOp',
-        String       => 'String',
-        Annotation => 'Annotation',
-        QuestionMark => 'QuestionMark',
-        Dot             => 'Dot'
-    ];
-    public static $keywords  = ['entity', 'type', 'const'];
-    public static $dataTypes = ['int', 'string','date', 'text', 'decimal', 'float'];
-}
-
-class InputStream
-{
-    private $str;
-    private $pos;
-    private $len;
-
-    public $line  = 1;
-
-    public function __construct($str) {
-        $this->str = $str;
-        $this->pos = 0;
-        $this->len = strlen($str);
-    }
-
-    private function getChar($index) {
-        if ($index >= 0 && $index < $this->len) return $this->str[$index];
-        return null;
-    }
-
-    public function val() {
-        return $this->getChar($this->pos);
-    }
-
-    public function peek() {
-        return $this->getChar($this->pos+1);
-    }
-
-    public function at($offset) {
-        $pos = $this->pos + $offset;
-        return $this->getChar($pos);
-    }
-
-    public function next() {
-        $this->pos = $this->pos + 1;
-    }
-    public function back() {
-        $this->pos = $this->pos - 1;
-    }
-
-    public function hasMore() {
-        return $this->pos < $this->len;
-    }
-
-    public function skipWhiteSpace()
-    {
-        while ($this->hasMore()) {
-            $ch = $this->val();
-            $isWhiteSpace = ($ch == " "  || $ch == "\n" || $ch == "\r" || $ch == "\t");
-            if ($isWhiteSpace) {
-                if ($ch == "\n") {
-                    $this->line++;
-                }
-            } else {
-                break;
-            }
-            $this->next();
-        }
-    }
-}
-
-class Token
-{
-    public $type;
-    public $value;
-    public $line;
-}
 
 function NewToken($value, $type)
 {
@@ -281,35 +178,35 @@ function GetTokens($def)
 
         switch($value) {
             case "{": {
-                $tokens[] = NewToken($value, OpenBrace);
+                $tokens[] = NewToken($value, SyntaxMap::OpenBrace);
             } break;
             case "}": {
-                $tokens[] = NewToken($value, CloseBrace);
+                $tokens[] = NewToken($value, SyntaxMap::CloseBrace);
             } break;
             case "(": {
-                $tokens[] = NewToken($value, OpenParen);
+                $tokens[] = NewToken($value, SyntaxMap::OpenParen);
             } break;
             case ")": {
-                $tokens[] = NewToken($value, CloseParen);
+                $tokens[] = NewToken($value, SyntaxMap::CloseParen);
             } break;
             case ",": {
-                $tokens[] = NewToken($value, Comma);
+                $tokens[] = NewToken($value, SyntaxMap::Comma);
             } break;
             case ".": {
-                $tokens[] = NewToken($value, Dot);
+                $tokens[] = NewToken($value, SyntaxMap::Dot);
             } break;
             case ";": {
-                $tokens[] = NewToken($value, Semicolon);
+                $tokens[] = NewToken($value, SyntaxMap::Semicolon);
             } break;
             case "=": {
-                $tokens[] = NewToken($value, AssignOp);
+                $tokens[] = NewToken($value, SyntaxMap::AssignOp);
             } break;
             case "?": {
-                $tokens[] = NewToken($value, QuestionMark);
+                $tokens[] = NewToken($value, SyntaxMap::QuestionMark);
             } break;
             case "\"": {
                 $string = GetString($it);
-                $tokens[] = NewToken($string, String);
+                $tokens[] = NewToken($string, SyntaxMap::String);
             } break;
             case "/": {
                 $it->next();
@@ -324,11 +221,11 @@ function GetTokens($def)
             } break;
             case "@": {
                 $annotation = GetAnnotation($it);
-                $tokens[]   = NewToken($annotation, Annotation);
+                $tokens[]   = NewToken($annotation, SyntaxMap::Annotation);
             } break;
             case (ctype_digit($value)): {
                 $number     = GetNumber($it);
-                $tokens[]   = NewToken($number, Number);
+                $tokens[]   = NewToken($number, SyntaxMap::Number);
             } break;
             case (ctype_alpha($value)): {
 
@@ -337,15 +234,15 @@ function GetTokens($def)
 
                 if (in_array($v,SyntaxMap::$keywords))
                 {
-                    $tokens[] = NewToken($value, Keyword);
+                    $tokens[] = NewToken($value, SyntaxMap::Keyword);
                 }
                 else if (in_array($v, SyntaxMap::$dataTypes))
                 {
-                    $tokens[] = NewToken($value, DataType);
+                    $tokens[] = NewToken($value, SyntaxMap::DataType);
                 }
                 else
                 {
-                    $tokens[] = NewToken($value, Identifier);
+                    $tokens[] = NewToken($value, SyntaxMap::Identifier);
                 }
             } break;
             default: {
@@ -365,92 +262,11 @@ function GetTokens($def)
     return $tokens;
 }
 
-class TokenStream
-{
-    private $tokens ;
-    private $pos = 0;
-
-    public  $entities  = [];
-    public  $types     = [];
-    public  $constants = [];
-
-    public function __construct($tokens) {
-        $this->tokens = $tokens;
-    }
-
-    public function hasMore() {
-        return isset($this->tokens[$this->pos+1]);
-    }
-
-    public function val() {
-        return $this->tokens[$this->pos];
-    }
-
-    public function getAndMove(){
-        $val = $this->tokens[$this->pos];
-        $this->next();
-        return $val;
-    }
-
-    public function next() {
-        $this->pos++;
-    }
-
-    public function typeAt($type, $at=0)
-    {
-        $p = $this->pos + $at;
-        if (isset($this->tokens[$p]))
-        {
-            $t = $this->tokens[$p];
-            if ($t->type != $type) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public function expect($type, $at=0)
-    {
-        $p = $this->pos + $at;
-        if (isset($this->tokens[$p]))
-        {
-            $t = $this->tokens[$p];
-            if ($t->type != $type) {
-                $tokenType = SyntaxMap::$map[$type];
-                throw ParserException::expectedToken($t, $tokenType);
-            }
-            return $t;
-        }
-        throw ParserException::indexOutOfRange($p);
-    }
-
-    public function expectAny($typeArr, $at=0)
-    {
-        $p = $this->pos + $at;
-        if (isset($this->tokens[$p]))
-        {
-            $t = $this->tokens[$p];
-            if (!in_array($t->type, $typeArr, true)) {
-                $tokenType = [];
-                foreach($typeArr as $type) {
-                    $tokenType[] = SyntaxMap::$map[$type];
-                }
-                $tokenTypeStr = implode(",", $tokenType);
-                throw ParserException::expectedToken($t, $tokenTypeStr);
-            }
-            return $t;
-        }
-        throw ParserException::indexOutOfRange($p);
-    }
-}
-
-
 function ParseDefinition(TokenStream $it)
 {
     $root = new ASTRoot();
 
-    while ($it->hasMore() && $it->expectAny([Annotation,Keyword], 0))
+    while ($it->hasMore() && $it->expectAny([SyntaxMap::Annotation, SyntaxMap::Keyword], 0))
     {
         $annotations = ParseAnnotations($it);
         $token = $it->val();
@@ -471,6 +287,11 @@ function ParseDefinition(TokenStream $it)
                 $const->annotations = $annotations;
                 $root->constants->add($const);
             } break;
+            case "enum": {
+                $enum = ParseEnum($it);
+                $enum->annotations = $annotations;
+                $root->enums->add($enum);
+            } break;
             default: {
                 throw ParserException::unexpectedKeyword($token);
             }
@@ -482,11 +303,11 @@ function ParseDefinition(TokenStream $it)
 function ParseConstant(TokenStream $it)
 {
     $const = new ASTConst;
-    $it->expect(Keyword, 0);
-    $it->expect(Identifier, 1);
-    $it->expect(AssignOp, 2);
-    $it->expect(String, 3);
-    $it->expect(Semicolon,4);
+    $it->expect(SyntaxMap::Keyword, 0);
+    $it->expect(SyntaxMap::Identifier, 1);
+    $it->expect(SyntaxMap::AssignOp, 2);
+    $it->expect(SyntaxMap::String, 3);
+    $it->expect(SyntaxMap::Semicolon,4);
 
     $it->getAndMove();
     $identifier = $it->getAndMove();
@@ -508,8 +329,8 @@ function ParseConstant(TokenStream $it)
 function ParseType(TokenStream $it)
 {
     $type = new ASTType;
-    $it->expect(Keyword,    0);
-    $it->expect(Identifier, 1);
+    $it->expect(SyntaxMap::Keyword,    0);
+    $it->expect(SyntaxMap::Identifier, 1);
 
     $it->getAndMove();
     $identifier   = $it->getAndMove();
@@ -523,7 +344,7 @@ function ParseType(TokenStream $it)
     }
     $it->types[strtolower($type->name)] = $type;
 
-    $it->expect(Semicolon, 0);
+    $it->expect(SyntaxMap::Semicolon, 0);
     $it->getAndMove();
 
     return $type;
@@ -533,8 +354,8 @@ function ParseEntity(TokenStream $it)
 {
     $entity = new ASTEntity;
 
-    $it->expect(Keyword,    0);
-    $it->expect(Identifier, 1);
+    $it->expect(SyntaxMap::Keyword,    0);
+    $it->expect(SyntaxMap::Identifier, 1);
     $it->getAndMove();
     $identifier = $it->getAndMove();
 
@@ -549,10 +370,10 @@ function ParseEntity(TokenStream $it)
     }
 
     // Parse table name
-    if ($it->typeAt(OpenParen, 0)) {
-        $it->expect(OpenParen, 0);
-        $it->expect(Identifier,1);
-        $it->expect(CloseParen,2);
+    if ($it->typeAt(SyntaxMap::OpenParen, 0)) {
+        $it->expect(SyntaxMap::OpenParen, 0);
+        $it->expect(SyntaxMap::Identifier,1);
+        $it->expect(SyntaxMap::CloseParen,2);
 
         $it->getAndMove();
         $tableName = $it->getAndMove();
@@ -560,12 +381,12 @@ function ParseEntity(TokenStream $it)
         $entity->table = $tableName->value;
     }
 
-    $it->expect(OpenBrace,  0);
+    $it->expect(SyntaxMap::OpenBrace,  0);
     $it->getAndMove();
 
     $entity->name = $identifier->value;
 
-    while (!$it->typeAt(CloseBrace, 0))
+    while (!$it->typeAt(SyntaxMap::CloseBrace, 0))
     {
         $field = ParseField($it, $entity);
         $entity->fields[] = $field;
@@ -575,21 +396,89 @@ function ParseEntity(TokenStream $it)
     return $entity;
 }
 
+function ParseEnum(TokenStream $it)
+{
+    $enum = new ASTEnum();
+
+    $it->expect(SyntaxMap::Keyword,    0);
+    $it->expect(SyntaxMap::Identifier, 1);
+    $it->getAndMove();
+    $identifier = $it->getAndMove();
+
+    $enum->name = $identifier->value;
+
+    //Verify that entity is not redeclared
+    $key = strtolower($identifier->value);
+    if (isset($it->types[$key])){
+        throw ParserException::redeclaredEnum($identifier);
+    } else {
+        $it->types[$key] = $enum;
+        $it->enums[$key] = [];
+    }
+
+    $it->expect(SyntaxMap::OpenBrace,  0);
+    $it->getAndMove();
+
+    while (!$it->typeAt(SyntaxMap::CloseBrace, 0))
+    {
+        $enumValue = ParseEnumValue($it, $enum);
+        $enum->values->add($enumValue);
+    }
+
+    $it->getAndMove();
+    return $enum;
+}
+
+function ParseEnumValue(TokenStream $it, ASTEnum $enum)
+{
+    $enumValue = new ASTEnumValue();
+    $enumValue->annotations = ParseAnnotations($it);
+
+    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType], 0);
+    $identifier = $it->getAndMove();
+
+    $enumValue->name = $identifier->value;
+
+    //Verify if entity is already declared
+    $entityKey = strtolower($enum->name);
+    $key = strtolower($identifier->value);
+
+    if (isset($it->enums[$entityKey][$key])) {
+        throw ParserException::redeclaredEnumValue($enum, $identifier);
+    } else {
+        $it->enums[$entityKey][$key] = [];
+    }
+
+    if ($it->typeAt(SyntaxMap::AssignOp, 0))
+    {
+        $it->getAndMove();
+        $it->expectAny([SyntaxMap::String, SyntaxMap::Number], 0);
+        $val = $it->getAndMove();
+
+        $enumValue->value = $val->getValue();
+    }
+
+    $it->expect(SyntaxMap::Semicolon,  0);
+    $it->getAndMove();
+
+    return $enumValue;
+}
+
 function ParseAnnotation(TokenStream $it)
 {
-    $it->expect(Annotation,   0);
+    $it->expect(SyntaxMap::Annotation,   0);
     $ast = new ASTAnnotation;
 
     $type  = $it->getAndMove();
     $ast->name = $type->value;
 
-    if ($it->typeAt(OpenParen,0))
+    if ($it->typeAt(SyntaxMap::OpenParen,0))
     {
         $it->getAndMove();
         $expectComma = false;
 
         //Parse default
-        $isVal =  $it->typeAt(String,0) || $it->typeAt(Number);
+        $isVal =  $it->typeAt(SyntaxMap::String,0) || $it->typeAt(SyntaxMap::Number);
         if ($isVal) {
             $tokenValue = $it->getAndMove();
             $ast->default = $tokenValue->value;
@@ -597,24 +486,24 @@ function ParseAnnotation(TokenStream $it)
         }
 
         //Read key = value
-        while (!$it->typeAt(CloseParen, 0))
+        while (!$it->typeAt(SyntaxMap::CloseParen, 0))
         {
             if ($expectComma) {
-                $it->expect(Comma, 0);
+                $it->expect(SyntaxMap::Comma, 0);
                 $it->getAndMove();
             }
 
-            $it->expect(Identifier, 0);
-            $it->expect(AssignOp, 1);
-            $it->expectAny([String, Number], 2);
+            $it->expect(SyntaxMap::Identifier, 0);
+            $it->expect(SyntaxMap::AssignOp, 1);
+            $it->expectAny([SyntaxMap::String, SyntaxMap::Number], 2);
             $identifier = $it->getAndMove();
             $it->getAndMove();
             $tokenValue = $it->getAndMove();
-            $ast->attributes[$identifier->value] = $tokenValue;
+            $ast->attributes[$identifier->value] = $tokenValue->value;
 
             $expectComma = true;
         }
-        $it->expect(CloseParen, 0);
+        $it->expect(SyntaxMap::CloseParen, 0);
         $it->getAndMove();
     }
     return $ast;
@@ -623,7 +512,7 @@ function ParseAnnotation(TokenStream $it)
 function ParseAnnotations(TokenStream $it)
 {
     $list = [];
-    while ($it->typeAt(Annotation, 0))
+    while ($it->typeAt(SyntaxMap::Annotation, 0))
     {
         $list[] = ParseAnnotation($it);
     }
@@ -633,38 +522,37 @@ function ParseAnnotations(TokenStream $it)
 function ParseDataType(TokenStream $it) {
     $dt = new ASTDataType;
 
-    $it->expectAny([Identifier, DataType],   0);
+    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType],   0);
     $type = $it->getAndMove();
     $dt->name = $type->value;
 
-    if ($type->type == Identifier) {
+    if ($type->type == SyntaxMap::Identifier) {
         $key = strtolower($type->value);
         if (!isset($it->types[$key])){
             throw ParserException::undefinedType($type);
         }
         $dt->type = $it->types[$key];
-        //print_r($dt); exit;
     }
 
-    if ($it->typeAt(QuestionMark, 0)) {
+    if ($it->typeAt(SyntaxMap::QuestionMark, 0)) {
         $it->getAndMove();
         $dt->nullable = true;
     }
 
-    if ($type->type === DataType && $it->typeAt(OpenParen,0))
+    if ($type->type === SyntaxMap::DataType && $it->typeAt(SyntaxMap::OpenParen,0))
     {
         $it->getAndMove();  //Open brace
-        if ($it->typeAt(Number, 0)) {
+        if ($it->typeAt(SyntaxMap::Number, 0)) {
             $num  = $it->getAndMove();
             $dt->size = $num->value;
         }
-        if ($it->typeAt(Comma, 0)) {
-            $it->expect(Number, 1);
+        if ($it->typeAt(SyntaxMap::Comma, 0)) {
+            $it->expect(SyntaxMap::Number, 1);
             $it->getAndMove();
             $num   = $it->getAndMove();
             $dt->scale = $num->value;
         }
-        $it->expect(CloseParen);
+        $it->expect(SyntaxMap::CloseParen);
         $it->getAndMove();
     }
     return $dt;
@@ -677,7 +565,7 @@ function ParseField(TokenStream $it, ASTEntity $entity)
 
     $type = ParseDataType($it);
 
-    $it->expectAny([Identifier, DataType], 0);
+    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType], 0);
     $identifier = $it->getAndMove();
 
     //Verify if entity is already declared
@@ -690,14 +578,14 @@ function ParseField(TokenStream $it, ASTEntity $entity)
         $it->entities[$entityKey][$key] = [];
     }
 
-    if ($it->typeAt(AssignOp, 0))
+    if ($it->typeAt(SyntaxMap::AssignOp, 0))
     {
         $it->getAndMove();
-        $it->expectAny([String, Number],0);
+        $it->expectAny([SyntaxMap::String, SyntaxMap::Number],0);
         $val = $it->getAndMove();
         $f->default = $val;
     }
-    $it->expect(Semicolon,  0);
+    $it->expect(SyntaxMap::Semicolon,  0);
     $it->getAndMove();
 
     $f->type = $type;

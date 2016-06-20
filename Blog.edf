@@ -6,9 +6,9 @@ const unitName      = "BlogDbContext";
 @PK type CommentId 	int;
 @PK type PostId     int;
 
+
 @Unique
 type Email          string(100);
-
 type ShortString	string(100);
 type LongString 	string(500);
 type DateModified  	date;

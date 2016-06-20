@@ -66,4 +66,14 @@ class ASTType implements TypeInterface
         }
         return null;
     }    
+
+    function getEnumType()
+    {
+        return null;
+    }
+    
+    function getIsSetType()
+    {
+        return false;
+    }       
 }

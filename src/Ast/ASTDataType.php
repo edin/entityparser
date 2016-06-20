@@ -64,5 +64,15 @@ class ASTDataType implements TypeInterface
             return $this->type->getPrecision();
         }
         return null;
-    }        
+    }  
+
+    function getEnumType()
+    {
+        return null;
+    }
+    
+    function getIsSetType()
+    {
+        return false;
+    }            
 }

@@ -11,4 +11,7 @@ interface TypeInterface
     function getIsNullable();
     function getSize();
     function getPrecision();
+
+    function getEnumType();
+    function getIsSetType();    
 }

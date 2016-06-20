@@ -9,12 +9,14 @@ class ASTRoot implements CodeModelInterface
     public $constants;
     public $types;
     public $entities;
+    public $enums;
 
     public function __construct()
     {
         $this->constants = new ConstCollection([]);
         $this->types     = new TypeCollection([]);
-        $this->entities  = new EntityCollection([]);       
+        $this->entities  = new EntityCollection([]);
+        $this->enums     = new EnumCollection([]);       
     }
 
     public function getConstants()
@@ -31,6 +33,11 @@ class ASTRoot implements CodeModelInterface
     {
         return $this->entities;
     }
+
+    public function getEnums()
+    {
+        return $this->enums;
+    }    
 
     public function getConstant($name)
     {

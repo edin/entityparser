@@ -30,6 +30,10 @@ class ParserException extends \Exception
         return new static("Redeclared entity '{$token->value}' at line {$token->line}.");
     }
 
+    public static function redeclaredEnum(Token $token) {
+        return new static("Redeclared enum '{$token->value}' at line {$token->line}.");
+    }
+
     public static function redeclaredType(Token $token) {
         return new static("Redeclared type '{$token->value}' at line {$token->line}.");
     }
@@ -41,4 +45,8 @@ class ParserException extends \Exception
     public static function undefinedType(Token $token) {
         return new static("Undefined type '{$token->value}' at line {$token->line}.");
     }
+
+    public static function redeclaredEnumValue(ASTEnum $enum, Token $token) {
+        return new static("Redeclared enum value '{$token->value}' in enum '{$enum->name}' at line {$token->line}.");
+    }    
 }

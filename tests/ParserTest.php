@@ -9,13 +9,16 @@ use EntityParser\Parser\Contract\TypeInterface;
 use EntityParser\Parser\Contract\EntityInterface;
 use EntityParser\Parser\Contract\FieldInterface;
 use EntityParser\Parser\Contract\AnnotationInterface;
+use EntityParser\Parser\Contract\EnumValueInterface;
+use EntityParser\Parser\Contract\EnumInterface;
 
 use EntityParser\Parser\Ast\FieldCollection;
 use EntityParser\Parser\Ast\TypeCollection;
 use EntityParser\Parser\Ast\EntityCollection;
 use EntityParser\Parser\Ast\ConstCollection;
 use EntityParser\Parser\Ast\AnnotationCollection;
-
+use EntityParser\Parser\Ast\EnumCollection;
+use EntityParser\Parser\Ast\EnumValueCollection;
 
 class ParserTest extends TestCase
 {
@@ -29,11 +32,33 @@ class ParserTest extends TestCase
         return $codeModel;
     }
 
-    public function testEmptySource()
+    public function emptySourceProvider()
     {
-        $empty = "";
+        return [
+            [""],
+            ["     "],
+            ["//Single line comment"],
+            ["
+             /*
+              Multiline comment
+             */
+            "],
+            ["
+             /*
+              This is commented 
+              entity Sample { }
+             */
+            "],
+            ["//type CustomType string(200);"]
+        ];
+    }
 
-        $cm = $this->parse($empty);
+    /**
+     * @dataProvider emptySourceProvider
+     */
+    public function testEmptySource($source)
+    {
+        $cm = $this->parse($source);
         $this->assertInstanceOf(CodeModelInterface::class, $cm);
 
         $types    = $cm->getTypes();
@@ -43,11 +68,6 @@ class ParserTest extends TestCase
         $this->assertEmpty($types);
         $this->assertEmpty($consts);
         $this->assertEmpty($entities);
-
-
-        $this->assertEmpty($types);
-        $this->assertEmpty($consts);
-        $this->assertEmpty($entities);    
 
         $this->assertInstanceOf(TypeCollection::class, $types);
         $this->assertInstanceOf(ConstCollection::class, $consts);
@@ -260,4 +280,88 @@ TEXT;
     {
         $this->assertTrue($collection->contains($annotationName), "Annotation collection does not contains $annotationName annotation.");
     }
+
+
+    public function testEnum()
+    {
+        $source = <<<TEXT
+            enum Language
+            {
+                PHP         = 1;
+                JavaScript  = 2;
+                VisualBasic = 3;
+                CSharp      = 4;
+                Delphi      = 5;
+                Ruby        = 6;
+                Python      = 7;
+                DLanguage   = 8;
+                Cpp         = 9;
+                Nim         = 10;
+            }
+TEXT;
+
+        $cm    = $this->parse($source);
+        $enums = $cm->getEnums();
+
+        $langEnum = $enums->findFirstOrNull("Language");
+        $this->assertInstanceOf(EnumInterface::class, $langEnum);
+
+
+        $values = $langEnum->getValues();
+        $this->assertInstanceOf(EnumValueCollection::class, $values);
+
+        $this->assertTrue($values->contains("PHP"));
+        $this->assertTrue($values->contains("JavaScript"));
+        $this->assertTrue($values->contains("VisualBasic"));
+        $this->assertTrue($values->contains("CSharp"));
+        $this->assertTrue($values->contains("Delphi"));
+        $this->assertTrue($values->contains("Ruby"));
+        $this->assertTrue($values->contains("Python"));
+        $this->assertTrue($values->contains("DLanguage"));
+        $this->assertTrue($values->contains("Cpp"));
+        $this->assertTrue($values->contains("Nim"));
+
+        $php = $values->findFirstOrNull("PHP");
+        $dlang = $values->findFirstOrNull("DLanguage");
+        $nim = $values->findFirstOrNull("Nim");
+
+        $this->assertInstanceOf(EnumValueInterface::class, $php);
+
+        $this->assertSame(1, $php->getValue());
+        $this->assertSame(8, $dlang->getValue());
+        $this->assertSame(10, $nim->getValue());
+    }
+
+    public function testEntityWithEnumType()
+    {
+        $source = <<<TEXT
+            enum Language
+            {
+                PHP         = 1;
+                JavaScript  = 2;
+                VisualBasic = 3;
+                CSharp      = 4;
+                Delphi      = 5;
+                Ruby        = 6;
+                Python      = 7;
+                DLanguage   = 8;
+                Cpp         = 9;
+                Nim         = 10;
+            }
+
+            entity Book
+            {
+                string   Title;
+                Language Language;
+            }
+TEXT;
+
+        $cm    = $this->parse($source);
+        $book = $cm->getEntities()->findFirstOrNull("Book");
+        $this->assertInstanceOf(EntityInterface::class, $book);
+
+        $Language = $book->getFields()->findFirstOrNull("Language");
+
+        $this->assertInstanceOf(TypeInterface::class, $Language->getType());
+    }    
 }

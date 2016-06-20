@@ -6,6 +6,7 @@ Statements  ::= Statement
 Statement   ::= Const
               | TypeDef
               | Entity
+              | Enum 
 
 Const       ::= Annotations "const"  Identifier "=" String ";"
 
@@ -16,6 +17,8 @@ Entity      ::= Annotations "entity" Identifier "{" Field* "}"
 Field       ::= Annotations DataType Identifier ";"
               | Annotations DataType Identifier "=" Value ";"
 
+Enum        ::= Annotations "enum" Identifier "{" EnumValue {, EnumValue } "}"              
+ 
 DataType    ::= BaseType
               | Identifier
 
@@ -31,6 +34,9 @@ Annotations ::= Annotation
 
 Annotation  ::= "@" ClassName
               | "@" ClassName "(" Attributes ")"
+
+EnumValue   ::= Annotations Identifier 
+              | Annotations Identifier "=" Value                
 
 Attributes  ::= (Value | Identifier "=" Value)? ("," Identifier "=" Value)*
 Value       ::= Number | String

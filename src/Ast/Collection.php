@@ -6,7 +6,7 @@ class Collection implements \IteratorAggregate, \Countable , \ArrayAccess
 {
     private $items;
 
-    public function __construct($items)
+    public function __construct($items = [])
     {
         $this->items = array_values($items);
     }
