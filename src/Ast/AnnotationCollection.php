@@ -6,36 +6,24 @@ use EntityParser\Parser\Contract\AnnotationInterface;
 
 class AnnotationCollection extends Collection
 {
-    /**
-     * @return boolean
-     */
-    public function contains($name)
+    public function contains($name): bool
     {
         return $this->find($name)->firstOrNull() != null;
     }
 
-    /**
-     * @return AnnotationInterface[]
-     */
-    public function find($name)
+    public function find($name): AnnotationCollection
     {
         return $this->filterBy(function($e) use ($name) {
             return $e->getName() == $name;
         });
     }    
 
-    /**
-     * @return AnnotationInterface | null
-     */
-    public function findFirstOrNull($name)
+    public function findFirstOrNull($name) /* ?AnnotationInterface */
     {
         return $this->find($name)->firstOrNull();
     }
 
-    /**
-     * @return AnnotationCollection
-     */
-    public function includeFromBase(AnnotationCollection $base)
+    public function includeFromBase(AnnotationCollection $base): AnnotationCollection
     {
         foreach ($base as $baseAnnotation) 
         {

@@ -10,25 +10,16 @@ class ASTEnumValue implements EnumValueInterface
     public $value;
     public $annotations = [];
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
     
-    /**
-     * @return \EntityParser\Parser\Ast\AnnotationCollection
-     */    
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         return new AnnotationCollection($this->annotations);
     }
-    
-    /**
-     * @return mixed 
-     */
+
     public function getValue()
     {
         return $this->value;

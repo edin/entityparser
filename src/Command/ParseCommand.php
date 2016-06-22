@@ -183,7 +183,7 @@ class ParseCommand extends Command
 
                 $subType = $type;
 
-                while ($subType->getBaseType() != null) {
+                while (!$subType->getIsPrimitiveType()) {
                     $subType = $subType->getBaseType();
                 }
 

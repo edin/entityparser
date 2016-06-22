@@ -303,21 +303,16 @@ function ParseDefinition(TokenStream $it)
 function ParseConstant(TokenStream $it)
 {
     $const = new ASTConst;
-    $it->expect(SyntaxMap::Keyword, 0);
-    $it->expect(SyntaxMap::Identifier, 1);
-    $it->expect(SyntaxMap::AssignOp, 2);
-    $it->expect(SyntaxMap::String, 3);
-    $it->expect(SyntaxMap::Semicolon,4);
-
-    $it->getAndMove();
-    $identifier = $it->getAndMove();
-    $it->getAndMove();
-    $value = $it->getAndMove();
-    $it->getAndMove();
+    $it->getToken(SyntaxMap::Keyword);
+    $identifier = $it->getToken(SyntaxMap::Identifier);
+    $it->getToken(SyntaxMap::AssignOp);
+    $value = $it->getToken(SyntaxMap::String);
+    $it->getToken(SyntaxMap::Semicolon);
 
     $const->name = $identifier->value;
     $const->value = $value->value;
     $key = strtolower($const->name);
+
     if (isset($it->constants[$key])){
         throw ParserException::constantDefined($identifier);
     }
@@ -329,11 +324,8 @@ function ParseConstant(TokenStream $it)
 function ParseType(TokenStream $it)
 {
     $type = new ASTType;
-    $it->expect(SyntaxMap::Keyword,    0);
-    $it->expect(SyntaxMap::Identifier, 1);
-
-    $it->getAndMove();
-    $identifier   = $it->getAndMove();
+    $it->getToken(SyntaxMap::Keyword);
+    $identifier = $it->getToken(SyntaxMap::Identifier);
 
     $type->name = $identifier->value;
     $type->type = ParseDataType($it);
@@ -342,7 +334,7 @@ function ParseType(TokenStream $it)
     if (isset($it->types[$key])) {
         throw ParserException::redeclaredType($identifier);
     }
-    $it->types[strtolower($type->name)] = $type;
+    $it->types[$key] = $type;
 
     $it->expect(SyntaxMap::Semicolon, 0);
     $it->getAndMove();
@@ -354,10 +346,8 @@ function ParseEntity(TokenStream $it)
 {
     $entity = new ASTEntity;
 
-    $it->expect(SyntaxMap::Keyword,    0);
-    $it->expect(SyntaxMap::Identifier, 1);
-    $it->getAndMove();
-    $identifier = $it->getAndMove();
+    $it->getToken(SyntaxMap::Keyword);
+    $identifier = $it->getToken(SyntaxMap::Identifier);
 
     $entity->table = $identifier->value;
 
@@ -371,18 +361,14 @@ function ParseEntity(TokenStream $it)
 
     // Parse table name
     if ($it->typeAt(SyntaxMap::OpenParen, 0)) {
-        $it->expect(SyntaxMap::OpenParen, 0);
-        $it->expect(SyntaxMap::Identifier,1);
-        $it->expect(SyntaxMap::CloseParen,2);
+        $it->getToken(SyntaxMap::OpenParen);
+        $tableName = $it->getToken(SyntaxMap::Identifier);
+        $it->getToken(SyntaxMap::CloseParen);
 
-        $it->getAndMove();
-        $tableName = $it->getAndMove();
-        $it->getAndMove();
         $entity->table = $tableName->value;
     }
 
-    $it->expect(SyntaxMap::OpenBrace,  0);
-    $it->getAndMove();
+    $it->getToken(SyntaxMap::OpenBrace);
 
     $entity->name = $identifier->value;
 
@@ -400,10 +386,8 @@ function ParseEnum(TokenStream $it)
 {
     $enum = new ASTEnum();
 
-    $it->expect(SyntaxMap::Keyword,    0);
-    $it->expect(SyntaxMap::Identifier, 1);
-    $it->getAndMove();
-    $identifier = $it->getAndMove();
+    $it->getToken(SyntaxMap::Keyword);
+    $identifier = $it->getToken(SyntaxMap::Identifier);
 
     $enum->name = $identifier->value;
 
@@ -416,8 +400,7 @@ function ParseEnum(TokenStream $it)
         $it->enums[$key] = [];
     }
 
-    $it->expect(SyntaxMap::OpenBrace,  0);
-    $it->getAndMove();
+    $it->getToken(SyntaxMap::OpenBrace);
 
     while (!$it->typeAt(SyntaxMap::CloseBrace, 0))
     {
@@ -434,9 +417,7 @@ function ParseEnumValue(TokenStream $it, ASTEnum $enum)
     $enumValue = new ASTEnumValue();
     $enumValue->annotations = ParseAnnotations($it);
 
-    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType], 0);
-    $identifier = $it->getAndMove();
-
+    $identifier = $it->getToken([SyntaxMap::Identifier, SyntaxMap::DataType]);
     $enumValue->name = $identifier->value;
 
     //Verify if entity is already declared
@@ -452,24 +433,20 @@ function ParseEnumValue(TokenStream $it, ASTEnum $enum)
     if ($it->typeAt(SyntaxMap::AssignOp, 0))
     {
         $it->getAndMove();
-        $it->expectAny([SyntaxMap::String, SyntaxMap::Number], 0);
-        $val = $it->getAndMove();
-
+        $val = $it->getToken([SyntaxMap::String, SyntaxMap::Number]);
         $enumValue->value = $val->getValue();
     }
 
-    $it->expect(SyntaxMap::Semicolon,  0);
-    $it->getAndMove();
+    $it->getToken(SyntaxMap::Semicolon);
 
     return $enumValue;
 }
 
 function ParseAnnotation(TokenStream $it)
 {
-    $it->expect(SyntaxMap::Annotation,   0);
     $ast = new ASTAnnotation;
 
-    $type  = $it->getAndMove();
+    $type = $it->getToken(SyntaxMap::Annotation);
     $ast->name = $type->value;
 
     if ($it->typeAt(SyntaxMap::OpenParen,0))
@@ -489,22 +466,17 @@ function ParseAnnotation(TokenStream $it)
         while (!$it->typeAt(SyntaxMap::CloseParen, 0))
         {
             if ($expectComma) {
-                $it->expect(SyntaxMap::Comma, 0);
-                $it->getAndMove();
+                $it->getToken(SyntaxMap::Comma);
             }
 
-            $it->expect(SyntaxMap::Identifier, 0);
-            $it->expect(SyntaxMap::AssignOp, 1);
-            $it->expectAny([SyntaxMap::String, SyntaxMap::Number], 2);
-            $identifier = $it->getAndMove();
-            $it->getAndMove();
-            $tokenValue = $it->getAndMove();
-            $ast->attributes[$identifier->value] = $tokenValue->value;
-
+            $identifier = $it->getToken(SyntaxMap::Identifier);
+            $it->getToken(SyntaxMap::AssignOp);
+            $tokenValue = $it->getToken([SyntaxMap::String, SyntaxMap::Number]);
+            
+            $ast->attributes[$identifier->value] = $tokenValue->getValue();
             $expectComma = true;
         }
-        $it->expect(SyntaxMap::CloseParen, 0);
-        $it->getAndMove();
+        $it->getToken(SyntaxMap::CloseParen);
     }
     return $ast;
 }
@@ -522,8 +494,7 @@ function ParseAnnotations(TokenStream $it)
 function ParseDataType(TokenStream $it) {
     $dt = new ASTDataType;
 
-    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType],   0);
-    $type = $it->getAndMove();
+    $type = $it->getToken([SyntaxMap::Identifier, SyntaxMap::DataType]);
     $dt->name = $type->value;
 
     if ($type->type == SyntaxMap::Identifier) {
@@ -547,9 +518,8 @@ function ParseDataType(TokenStream $it) {
             $dt->size = $num->value;
         }
         if ($it->typeAt(SyntaxMap::Comma, 0)) {
-            $it->expect(SyntaxMap::Number, 1);
             $it->getAndMove();
-            $num   = $it->getAndMove();
+            $num  = $it->getToken(SyntaxMap::Number);
             $dt->scale = $num->value;
         }
         $it->expect(SyntaxMap::CloseParen);
@@ -565,8 +535,7 @@ function ParseField(TokenStream $it, ASTEntity $entity)
 
     $type = ParseDataType($it);
 
-    $it->expectAny([SyntaxMap::Identifier, SyntaxMap::DataType], 0);
-    $identifier = $it->getAndMove();
+    $identifier = $it->getToken([SyntaxMap::Identifier, SyntaxMap::DataType]);
 
     //Verify if entity is already declared
     $entityKey = strtolower($entity->name);
@@ -581,12 +550,10 @@ function ParseField(TokenStream $it, ASTEntity $entity)
     if ($it->typeAt(SyntaxMap::AssignOp, 0))
     {
         $it->getAndMove();
-        $it->expectAny([SyntaxMap::String, SyntaxMap::Number],0);
-        $val = $it->getAndMove();
+        $val = $it->getToken([SyntaxMap::String, SyntaxMap::Number]);
         $f->default = $val;
     }
-    $it->expect(SyntaxMap::Semicolon,  0);
-    $it->getAndMove();
+    $it->getToken(SyntaxMap::Semicolon);
 
     $f->type = $type;
     $f->name = $identifier->value;

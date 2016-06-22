@@ -11,22 +11,22 @@ class ASTEntity implements EntityInterface
     public $fields;
     public $annotations = [];
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         return new AnnotationCollection($this->annotations);
     }
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->fields;
     }
 
-    public function getFields()
+    public function getFields(): FieldCollection
     {
         return new FieldCollection($this->fields);
     }

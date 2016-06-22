@@ -6,28 +6,19 @@ use EntityParser\Parser\Contract\FieldInterface;
 
 class ConstCollection extends Collection
 {
-    /**
-     * @return boolean
-     */
-    public function contains($name)
+    public function contains($name): bool
     {
         return $this->find($name)->firstOrNull() != null;
     }
 
-    /**
-     * @return ConstantInterface[]
-     */
-    public function find($name)
+    public function find($name): ConstCollection
     {
         return $this->filterBy(function($e) use ($name) {
             return $e->getName() == $name;
         });
     }    
-
-    /**
-     * @return ConstantInterface | null
-     */
-    public function findFirstOrNull($name)
+    
+    public function findFirstOrNull($name) /* ?ConstantInterface */
     {
         return $this->find($name)->firstOrNull();
     }

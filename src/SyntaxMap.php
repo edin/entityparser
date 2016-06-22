@@ -38,6 +38,6 @@ class SyntaxMap
         self::Dot          => 'Dot'
     ];
 
-    public static $keywords  = ['entity', 'type', 'const', 'enum'];
+    public static $keywords  = ['entity', 'type', 'const', 'enum', 'setof'];
     public static $dataTypes = ['int', 'string','date', 'text', 'decimal', 'float'];
 }

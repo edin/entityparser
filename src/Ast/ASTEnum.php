@@ -3,8 +3,9 @@
 namespace EntityParser\Parser\Ast;
 
 use EntityParser\Parser\Contract\EnumInterface;
+use EntityParser\Parser\Contract\TypeInterface;
 
-class ASTEnum implements EnumInterface
+class ASTEnum implements EnumInterface, TypeInterface
 {
     public $name;
     public $annotations = [];
@@ -15,27 +16,53 @@ class ASTEnum implements EnumInterface
         $this->values = new EnumValueCollection();
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name; 
     }
     
-    /**
-     * @return \EntityParser\Parser\Ast\AnnotationCollection
-     */    
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         return new AnnotationCollection($this->annotations);
     }
     
-    /**
-     * @return EnumValueCollection 
-     */
-    public function getValues()
+    public function getValues(): EnumValueCollection
     {
         return $this->values;
     }
+
+    function getBaseType(): TypeInterface
+    {
+        throw new \Exception("BaseType is not supported for enum types.");
+    }
+
+    function getIsPrimitiveType(): bool
+    {
+        return false;
+    }
+
+    function getIsNullable(): bool
+    {
+        return false;
+    }
+
+    function getSize(): int
+    {
+        return 0;
+    }
+
+    function getScale(): int
+    {
+        return 0;
+    }
+
+    function getIsEnumType(): bool
+    {
+        return true;
+    }
+
+    function getIsSetType(): bool
+    {
+        return false;
+    }       
 }

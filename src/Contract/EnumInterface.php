@@ -2,20 +2,12 @@
 
 namespace EntityParser\Parser\Contract;
 
+use EntityParser\Parser\Ast\AnnotationCollection;
+use EntityParser\Parser\Ast\EnumValueCollection;
+
 interface EnumInterface
 {
-    /**
-     * @return string
-     */
-    function getName();
-    
-    /**
-     * @return \EntityParser\Parser\Ast\AnnotationCollection
-     */    
-    function getAnnotations();
-    
-    /**
-     * @return EnumValueCollection 
-     */
-    function getValues();
+    function getName(): string;
+    function getAnnotations(): AnnotationCollection; 
+    function getValues(): EnumValueCollection;
 }

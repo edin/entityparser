@@ -135,8 +135,8 @@ TEXT;
         $this->assertSame($shortString->getBaseType()->getName(), "string");
         $this->assertSame($longString->getBaseType()->getName(), "string");
         
-        $this->assertSame($userId->getBaseType()->getSize(), null);
-        $this->assertSame($email->getBaseType()->getSize(), null);
+        $this->assertSame($userId->getBaseType()->getSize(), 0);
+        $this->assertSame($email->getBaseType()->getSize(), 0);
         $this->assertSame($shortString->getBaseType()->getSize(), 100);
         $this->assertSame($longString->getBaseType()->getSize(), 10000);
     }    
@@ -363,5 +363,6 @@ TEXT;
         $Language = $book->getFields()->findFirstOrNull("Language");
 
         $this->assertInstanceOf(TypeInterface::class, $Language->getType());
+        $this->assertInstanceOf(TypeInterface::class, $Language->getType()->getBaseType());
     }    
 }

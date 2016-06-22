@@ -3,6 +3,8 @@
 namespace EntityParser\Parser\Ast;
 
 use EntityParser\Parser\Contract\FieldInterface;
+use EntityParser\Parser\Contract\TypeInterface;
+
 
 class ASTField implements FieldInterface
 {
@@ -21,17 +23,17 @@ class ASTField implements FieldInterface
         return $type->name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         return new AnnotationCollection($this->annotations);
     }
 
-    public function getType()
+    public function getType(): TypeInterface
     {
         return $this->type;
     }

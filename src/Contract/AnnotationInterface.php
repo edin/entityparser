@@ -4,7 +4,7 @@ namespace EntityParser\Parser\Contract;
 
 interface AnnotationInterface
 {
-    function getName();
+    function getName(): string;
     function getDefaultValue();
-    function getAttributes();
+    function getAttributes(): array;
 }

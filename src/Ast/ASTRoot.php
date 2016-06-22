@@ -19,22 +19,22 @@ class ASTRoot implements CodeModelInterface
         $this->enums     = new EnumCollection([]);       
     }
 
-    public function getConstants()
+    public function getConstants(): ConstCollection
     {
         return $this->constants;
     }
 
-    public function getTypes()
+    public function getTypes(): TypeCollection
     {
         return $this->types;
     }
 
-    public function getEntities()
+    public function getEntities(): EntityCollection
     {
         return $this->entities;
     }
 
-    public function getEnums()
+    public function getEnums(): EnumCollection
     {
         return $this->enums;
     }    

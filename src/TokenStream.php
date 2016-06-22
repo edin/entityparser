@@ -48,6 +48,46 @@ class TokenStream
         return false;
     }
 
+    /**
+     * @param $expectedType
+     */
+    private function typeToString($expectedType)
+    {
+        if (is_array($expectedType))
+        {
+            $tokenType = [];
+            foreach($expectedType as $type) {
+                $tokenType[] = SyntaxMap::$map[$type];
+            }
+            return implode(",", $tokenType);   
+        }
+        else
+        {
+            return SyntaxMap::$map[$expectedType];    
+        }
+    }
+
+    public function getToken($expectedType)
+    {
+        $pos = $this->pos;
+        if (isset($this->tokens[$pos]))
+        {
+            $tok = $this->tokens[$pos];
+            $expectedTypes = (array)$expectedType;
+
+            if (!in_array($tok->type, $expectedTypes, true)) 
+            {
+                if ($tok->type != $type) {
+                    $tokenType = $this->typeToString($expectedType);
+                    throw ParserException::expectedToken($tok, $tokenType);
+                }
+            }
+            $this->next();
+            return $tok;
+        }
+        throw ParserException::indexOutOfRange($pos);        
+    }
+
     public function expect($type, $at=0)
     {
         $p = $this->pos + $at;

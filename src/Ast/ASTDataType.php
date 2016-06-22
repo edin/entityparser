@@ -13,12 +13,12 @@ class ASTDataType implements TypeInterface
     public $nullable = false;
     public $annotations = [];
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         $annotations = new AnnotationCollection($this->annotations);
         if ($this->type != null) 
@@ -29,22 +29,26 @@ class ASTDataType implements TypeInterface
         return $annotations;
     }
 
-    public function getBaseType()
+    public function getBaseType(): TypeInterface
     {
+        if ($this->type === null) {
+            throw new \Exception("Type '{$this->name}' does not have a base type.");
+        }
+
         return $this->type;
     }
 
-    public function getIsBaseType()
+    public function getIsPrimitiveType(): bool
     {
         return ($this->type == null);
     }
 
-    public function getIsNullable()
+    public function getIsNullable(): bool
     {
         return $this->nullable;
     }
 
-    public function getSize()
+    public function getSize(): int
     {
         if ($this->size !== null) {
             return (int)$this->size;    
@@ -52,26 +56,26 @@ class ASTDataType implements TypeInterface
         if ($this->type !== null) {
             return $this->type->getSize();
         }
-        return null;
+        return 0;
     }
 
-    public function getPrecision()
+    public function getScale(): int
     {
         if ($this->scale !== null) {
             return (int)$this->size;    
         }
         if ($this->type !== null) {
-            return $this->type->getPrecision();
+            return $this->type->getScale();
         }
-        return null;
+        return 0;
     }  
 
-    function getEnumType()
+    function getIsEnumType(): bool
     {
-        return null;
+        return false;
     }
     
-    function getIsSetType()
+    function getIsSetType(): bool
     {
         return false;
     }            

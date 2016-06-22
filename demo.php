@@ -2,8 +2,9 @@
 
 $vendorDir =  __DIR__ . "/vendor/autoload.php";
 
-if (!is_file($vendorDir)) {
-    echo "Update dependecies using 'composer update' and try again. \n";
+if (!is_file($vendorDir)) 
+{
+    echo "Please update dependencies using 'composer update' and try again.\n";
     echo "\n";
     exit;
 }

@@ -20,12 +20,12 @@ class ASTType implements TypeInterface
         return $type->name;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getAnnotations()
+    public function getAnnotations(): AnnotationCollection
     {
         $annotations = new AnnotationCollection($this->annotations);
         if ($this->type != null) 
@@ -36,22 +36,22 @@ class ASTType implements TypeInterface
         return $annotations;
     }
 
-    public function getBaseType()
+    public function getBaseType(): TypeInterface
     {
         return $this->type;
     }
 
-    public function getIsBaseType()
+    public function getIsPrimitiveType(): bool
     {
         return false;
     }
 
-    public function getIsNullable()
+    public function getIsNullable(): bool
     {
         return false;
     }
 
-    public function getSize()
+    public function getSize(): int
     {
         if ($this->type !== null) {
             return $this->type->getSize();
@@ -59,20 +59,20 @@ class ASTType implements TypeInterface
         return null;
     }
 
-    public function getPrecision()
+    public function getScale(): int
     {
         if ($this->type !== null) {
-            return $this->type->getPrecision();
+            return $this->type->getScale();
         }
         return null;
     }    
 
-    function getEnumType()
+    function getIsEnumType(): bool
     {
-        return null;
+        return false;
     }
-    
-    function getIsSetType()
+
+    function getIsSetType(): bool
     {
         return false;
     }       

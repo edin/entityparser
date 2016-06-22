@@ -10,7 +10,7 @@ class ASTAnnotation implements AnnotationInterface
     public $default;
     public $attributes = [];
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -20,7 +20,7 @@ class ASTAnnotation implements AnnotationInterface
         return $this->default;
     }
 
-    function getAttributes()
+    function getAttributes(): array
     {
         return $this->attributes;
     }

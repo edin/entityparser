@@ -6,28 +6,19 @@ use EntityParser\Parser\Contract\FieldInterface;
 
 class EntityCollection extends Collection
 {
-    /**
-     * @return boolean
-     */
-    public function contains($name)
+    public function contains($name): bool
     {
         return $this->find($name)->firstOrNull() != null;
     }
 
-    /**
-     * @return EntityInterface[]
-     */
-    public function find($name)
+    public function find($name): EntityCollection
     {
         return $this->filterBy(function($e) use ($name) {
             return $e->getName() == $name;
         });
     }    
 
-    /**
-     * @return EntityInterface | null
-     */
-    public function findFirstOrNull($name)
+    public function findFirstOrNull($name) /* ?EntityInterface */
     {
         return $this->find($name)->firstOrNull();
     }

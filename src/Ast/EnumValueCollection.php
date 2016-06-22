@@ -6,28 +6,19 @@ use EntityParser\Parser\Contract\TypeInterface;
 
 class EnumValueCollection extends Collection
 {
-    /**
-     * @return boolean
-     */
-    public function contains($name)
+    public function contains($name): bool
     {
         return $this->find($name)->firstOrNull() != null;
     }
 
-    /**
-     * @return EnumValueInterface[]
-     */
-    public function find($name)
+    public function find($name): EnumValueCollection
     {
         return $this->filterBy(function($e) use ($name) {
             return $e->getName() == $name;
         });
     }    
 
-    /**
-     * @return EnumValueInterface | null
-     */
-    public function findFirstOrNull($name)
+    public function findFirstOrNull($name) /* ?EnumValueInterface */
     {
         return $this->find($name)->firstOrNull();
     }

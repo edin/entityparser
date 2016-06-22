@@ -2,16 +2,17 @@
 
 namespace EntityParser\Parser\Contract;
 
+use \EntityParser\Parser\Ast\AnnotationCollection; 
+
 interface TypeInterface
 {
-    function getName();
-    function getAnnotations();
-    function getBaseType();
-    function getIsBaseType();
-    function getIsNullable();
-    function getSize();
-    function getPrecision();
-
-    function getEnumType();
-    function getIsSetType();    
+    function getName(): string;
+    function getAnnotations(): AnnotationCollection;
+    function getBaseType(): TypeInterface;
+    function getIsPrimitiveType(): bool;
+    function getIsNullable(): bool;
+    function getSize(): int;
+    function getScale(): int;
+    function getIsEnumType(): bool;
+    function getIsSetType(): bool;    
 }
