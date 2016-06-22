@@ -2,6 +2,8 @@
 
 namespace EntityParser\Parser;
 
+use EntityParser\Parser\Exception\ParserException;
+
 class TokenStream
 {
     private $tokens ;
@@ -77,10 +79,10 @@ class TokenStream
 
             if (!in_array($tok->type, $expectedTypes, true)) 
             {
-                if ($tok->type != $type) {
+                //if ($tok->type != $type) {
                     $tokenType = $this->typeToString($expectedType);
                     throw ParserException::expectedToken($tok, $tokenType);
-                }
+                //}
             }
             $this->next();
             return $tok;

@@ -69,11 +69,17 @@ class ASTType implements TypeInterface
 
     function getIsEnumType(): bool
     {
+        if ($this->type != null) {
+            return $this->type->getIsEnumType();
+        }
         return false;
     }
 
     function getIsSetType(): bool
     {
+        if ($this->type != null) {
+            return $this->type->getIsSetType();
+        }
         return false;
     }       
 }

@@ -48,5 +48,13 @@ class ParserException extends \Exception
 
     public static function redeclaredEnumValue(ASTEnum $enum, Token $token) {
         return new static("Redeclared enum value '{$token->value}' in enum '{$enum->name}' at line {$token->line}.");
-    }    
+    }  
+
+    public static function enumTypeRequired(Token $token) {
+        return new static("Type '{$token->value}' is expected to be an Enum type at line {$token->line}.");
+    } 
+
+    public static function expectedSetOfKeyword(Token $token) {
+        return new static("Expected setof keyword  but '{$token->value}' found at line {$token->line}.");
+    }          
 }

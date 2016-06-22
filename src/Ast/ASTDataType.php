@@ -12,6 +12,7 @@ class ASTDataType implements TypeInterface
     public $scale;
     public $nullable = false;
     public $annotations = [];
+    private $isSetType = null;
 
     public function getName(): string
     {
@@ -72,11 +73,24 @@ class ASTDataType implements TypeInterface
 
     function getIsEnumType(): bool
     {
+        if ($this->type !== null)
+        {
+            return $this->type->getIsEnumType();
+        }
         return false;
     }
     
     function getIsSetType(): bool
     {
-        return false;
-    }            
+        if ($this->isSetType == null)
+        {
+            return $this->getBaseType()->getIsSetType();
+        }
+        return $this->isSetType;
+    }     
+
+    function setIsSetType(bool $isSetType)
+    {
+        $this->isSetType = $isSetType;
+    }       
 }

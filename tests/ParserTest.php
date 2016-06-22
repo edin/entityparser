@@ -364,5 +364,60 @@ TEXT;
 
         $this->assertInstanceOf(TypeInterface::class, $Language->getType());
         $this->assertInstanceOf(TypeInterface::class, $Language->getType()->getBaseType());
+    }   
+
+    public function testSetTypes()
+    {
+        $source = <<<TEXT
+            enum Language
+            {
+                PHP         = 1;
+                JavaScript  = 2;
+                VisualBasic = 3;
+                CSharp      = 4;
+                Delphi      = 5;
+                Ruby        = 6;
+                Python      = 7;
+                DLanguage   = 8;
+                Cpp         = 9;
+                Nim         = 10;
+            }
+
+            type LanguageSet setof Language;
+
+            entity User{
+                int Id;
+                string FirstName;
+                string LastName;
+                LanguageSet Languages;
+            }
+TEXT;
+
+        $cm    = $this->parse($source);
+        $enums = $cm->getEnums();
+        $types = $cm->getTypes();
+        $entities = $cm->getEntities();
+
+        $langType = $enums->findFirstOrNull("Language");
+        $langSetType = $types->findFirstOrNull("LanguageSet");
+        $user = $entities->findFirstOrNull("User");
+        $languagesField = $user->getFields()->findFirstOrNull("Languages");
+        
+        
+        $this->assertInstanceOf(TypeInterface::class, $langType, "Language is not instance of TypeInterface.");
+        $this->assertInstanceOf(TypeInterface::class, $langSetType, "LanguageSet is not instance of TypeInterface.");
+
+        $this->assertTrue($langType->getIsEnumType(),    "Language is not enum type.");
+        $this->assertTrue($langSetType->getIsSetType(),  "LanguageSet is not 'setof enum' type.");
+        $this->assertTrue($langSetType->getIsEnumType(), "LanguageSet is not 'enum' type.");
+
+        $typeAlias = $langSetType;               //type LanguageSet
+        $setType   = $typeAlias->getBaseType();  // setof Language
+        $enumType  = $setType->getBaseType();    // enum  Language
+
+        $this->assertSame($enumType, $langType, "Language base type does not match with enum type.");
+
+        //TODO: Flaten out 
+        //$this->assertSame($languagesField->getType(),  $langSetType);
     }    
 }

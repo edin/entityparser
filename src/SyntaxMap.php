@@ -19,6 +19,7 @@ class SyntaxMap
     const Annotation   = 14;
     const QuestionMark = 15;
     const Dot          = 16;
+    const SetOf        = 17;
 
     public static $map = [
         self::OpenBrace    => 'OpenBrace',
@@ -35,7 +36,8 @@ class SyntaxMap
         self::String       => 'String',
         self::Annotation   => 'Annotation',
         self::QuestionMark => 'QuestionMark',
-        self::Dot          => 'Dot'
+        self::Dot          => 'Dot',
+        self::SetOf        => 'SetOf'
     ];
 
     public static $keywords  = ['entity', 'type', 'const', 'enum', 'setof'];

@@ -493,6 +493,20 @@ function ParseAnnotations(TokenStream $it)
 
 function ParseDataType(TokenStream $it) {
     $dt = new ASTDataType;
+    $isSetType = false;
+
+    if ($it->typeAt(SyntaxMap::Keyword, 0))
+    {
+        $tok = $it->getToken(SyntaxMap::Keyword);
+        if ($tok->value == "setof") 
+        {
+            $isSetType = true;
+        }
+        else
+        {
+            throw ParserException::expectedSetOfKeyword($tok);
+        }
+    }
 
     $type = $it->getToken([SyntaxMap::Identifier, SyntaxMap::DataType]);
     $dt->name = $type->value;
@@ -503,27 +517,38 @@ function ParseDataType(TokenStream $it) {
             throw ParserException::undefinedType($type);
         }
         $dt->type = $it->types[$key];
+
+        if ($isSetType)
+        {
+            if ($dt->type->getIsEnumType() == false)
+            {
+                throw ParserException::enumTypeIsRequired($type);
+            }
+            
+            $dt->setIsSetType(true);
+        }
     }
 
     if ($it->typeAt(SyntaxMap::QuestionMark, 0)) {
         $it->getAndMove();
         $dt->nullable = true;
+        //TODO: Should set types be nullable ?
     }
 
     if ($type->type === SyntaxMap::DataType && $it->typeAt(SyntaxMap::OpenParen,0))
     {
+        //TODO: Should set types have size and scale specifier ?
         $it->getAndMove();  //Open brace
         if ($it->typeAt(SyntaxMap::Number, 0)) {
             $num  = $it->getAndMove();
-            $dt->size = $num->value;
+            $dt->size = $num->getValue();
         }
         if ($it->typeAt(SyntaxMap::Comma, 0)) {
             $it->getAndMove();
             $num  = $it->getToken(SyntaxMap::Number);
-            $dt->scale = $num->value;
+            $dt->scale = $num->getValue();
         }
-        $it->expect(SyntaxMap::CloseParen);
-        $it->getAndMove();
+        $it->getToken(SyntaxMap::CloseParen);
     }
     return $dt;
 }
